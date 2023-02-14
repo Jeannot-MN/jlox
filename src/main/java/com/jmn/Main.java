@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class Main {
 
@@ -49,14 +50,13 @@ public class Main {
     private static void run(String source) {
         Scanner scanner = new Scanner(source);
 
-        //TODO: Shouldn't this method be called execute because we know all the scanner does is return tokens?
-        List<Token> tokens = scanner.scanTokens();
+        List<Token> tokens = scanner.execute();
         for (Token token : tokens) {
             System.out.println(token);
         }
     }
 
-    private static void error(int line, String message) {
+    static void error(int line, String message) {
         report(line, "", message);
     }
 
