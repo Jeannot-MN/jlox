@@ -8,6 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Main {
+
+    static boolean hadError = false;
+
     public static void main(String[] args) throws IOException {
         System.out.println("Thanks for using JLOX...");
 
@@ -24,6 +27,8 @@ public class Main {
     private static void runFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
+
+        if (hadError) System.exit(65);
     }
 
     private static void runPrompt() throws IOException {
@@ -37,6 +42,7 @@ public class Main {
             if (line == null) break;
 
             run(line);
+            hadError = false;
         }
     }
 
@@ -45,8 +51,17 @@ public class Main {
 
         //TODO: Shouldn't this method be called execute because we know all the scanner does is return tokens?
         List<Token> tokens = scanner.scanTokens();
-        for(Token token: tokens){
+        for (Token token : tokens) {
             System.out.println(token);
         }
+    }
+
+    private static void error(int line, String message) {
+        report(line, "", message);
+    }
+
+    private static void report(int line, String where, String message) {
+        System.err.println("[line " + line + "] Error" + where + ": " + message);
+        hadError = true;
     }
 }
