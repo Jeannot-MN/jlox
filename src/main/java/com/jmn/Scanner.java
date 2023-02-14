@@ -23,6 +23,7 @@ import static com.jmn.TokenType.RIGHT_PAREN;
 import static com.jmn.TokenType.SEMICOLON;
 import static com.jmn.TokenType.SLASH;
 import static com.jmn.TokenType.STAR;
+import static com.jmn.TokenType.STRING;
 
 public class Scanner {
 
@@ -97,6 +98,20 @@ public class Scanner {
                 } else {
                     addToken(SLASH);
                 }
+            case '"':
+                while (peek()!='"' && !isAtEnd()){
+                    if(peek()== '\n') line++;
+                    getNextChar();
+                }
+                if (isAtEnd()){
+                    Main.error(line, "Unterminated string.");
+                }
+
+                getNextChar();
+                // Trim the surrounding quotes.
+                String value = source.substring(start + 1, current - 1);
+                addToken(STRING, value);
+                break;
             case ' ':
             case '\r':
             case '\t':
