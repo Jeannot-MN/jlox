@@ -45,5 +45,8 @@ public class Main {
 
         //TODO: Shouldn't this method be called execute because we know all the scanner does is return tokens?
         List<Token> tokens = scanner.scanTokens();
+        for(Token token: tokens){
+            System.out.println(token);
+        }
     }
 }
