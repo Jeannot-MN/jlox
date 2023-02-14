@@ -17,6 +17,7 @@ import static com.jmn.TokenType.LEFT_PAREN;
 import static com.jmn.TokenType.LESS;
 import static com.jmn.TokenType.LESS_EQUAL;
 import static com.jmn.TokenType.MINUS;
+import static com.jmn.TokenType.NUMBER;
 import static com.jmn.TokenType.PLUS;
 import static com.jmn.TokenType.RIGHT_BRACE;
 import static com.jmn.TokenType.RIGHT_PAREN;
@@ -98,19 +99,9 @@ public class Scanner {
                 } else {
                     addToken(SLASH);
                 }
+                break;
             case '"':
-                while (peek()!='"' && !isAtEnd()){
-                    if(peek()== '\n') line++;
-                    getNextChar();
-                }
-                if (isAtEnd()){
-                    Main.error(line, "Unterminated string.");
-                }
-
-                getNextChar();
-                // Trim the surrounding quotes.
-                String value = source.substring(start + 1, current - 1);
-                addToken(STRING, value);
+                string();
                 break;
             case ' ':
             case '\r':
@@ -121,7 +112,11 @@ public class Scanner {
                 line++;
                 break;
             default:
-                Main.error(line, "Unexpected character.");
+                if (isDigit(c)) {
+                    number();
+                } else {
+                    Main.error(line, "Unexpected character.");
+                }
                 break;
         }
     }
@@ -135,12 +130,41 @@ public class Scanner {
         tokens.add(new Token(type, lexeme, literal, line));
     }
 
+    private void string() {
+        while (peek() != '"' && !isAtEnd()) {
+            if (peek() == '\n') line++;
+            getNextChar();
+        }
+        if (isAtEnd()) {
+            Main.error(line, "Unterminated string.");
+            return;
+        }
+
+        getNextChar();
+        // Trim the surrounding quotes.
+        String value = source.substring(start + 1, current - 1);
+        addToken(STRING, value);
+    }
+
+    private void number() {
+        while (isDigit(peek())) getNextChar();
+
+        // Look for a fractional part.
+        if (peek() == '.' && isDigit(peekNext())) {
+            // Consume the "."
+            getNextChar();
+            while (isDigit(peek())) getNextChar();
+        }
+        addToken(NUMBER,
+                Double.parseDouble(source.substring(start, current)));
+    }
+
     private char getNextChar() {
         return source.charAt(current++);
     }
 
     private boolean match(char c) {
-        if (isAtEnd() || source.charAt(current) == c) return false;
+        if (isAtEnd() || source.charAt(current) != c) return false;
 
         current++;
         return true;
@@ -151,7 +175,16 @@ public class Scanner {
         return source.charAt(current);
     }
 
+    private char peekNext() {
+        if (current + 1 >= source.length()) return '\0';
+        return source.charAt(current + 1);
+    }
+
     private boolean isAtEnd() {
         return current >= source.length();
+    }
+
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
     }
 }
