@@ -198,11 +198,10 @@ public class Scanner {
             getNextChar();
             while (isDigit(peek())) getNextChar();
         }
-        addToken(NUMBER,
-                Double.parseDouble(source.substring(start, current)));
+        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
     }
 
-    private void identifier(){
+    private void identifier() {
         while (isAlphaNumeric(peek())) getNextChar();
 
         String text = source.substring(start, current);
@@ -245,7 +244,7 @@ public class Scanner {
         return (c >= 'a' && c <= 'z') || ((c >= 'A' && c <= 'Z')) || c == '_';
     }
 
-    private boolean isAlphaNumeric(char c){
+    private boolean isAlphaNumeric(char c) {
         return isAlpha(c) || isDigit(c);
     }
 }
