@@ -84,7 +84,6 @@ public class Scanner {
             start = current;
             scanToken();
         }
-
         tokens.add(new Token(EOF, "", null, line));
         return tokens;
     }
